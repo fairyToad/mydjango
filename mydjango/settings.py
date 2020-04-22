@@ -87,8 +87,8 @@ DATABASES = {
           'NAME': 'md',                       #数据库名
           'USER': 'root',                       #用户名
           'PASSWORD': 'root',                   #密码
-          'HOST': '',                           #数据库主机，默认为localhost
-          'PORT': '',                           #数据库端口，MySQL默认为3306
+          'HOST': 'localhost',                           #数据库主机，默认为localhost
+          'PORT': 3306,                           #数据库端口，MySQL默认为3306
           'OPTIONS': {
              'autocommit': True,
          }

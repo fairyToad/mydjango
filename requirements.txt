@@ -7,3 +7,4 @@ pyjwt
 pycryptodome
 selenium
 qiniu
+dwebsocket

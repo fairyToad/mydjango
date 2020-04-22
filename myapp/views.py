@@ -47,6 +47,8 @@ from mydjango.settings import BASE_DIR
 from django.db.models import Q,F
 
 #导入dwebsocket的库
+import dwebsocket
+
 from dwebsocket.decorators import accept_websocket
 import uuid
 
