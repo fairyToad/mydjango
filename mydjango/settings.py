@@ -84,13 +84,13 @@ WSGI_APPLICATION = 'mydjango.wsgi.application'
 DATABASES = {
    'default': {
           'ENGINE': 'django.db.backends.mysql', #数据库引擎
-          'NAME': 'md',                       #数据库名
+          'NAME': 'md',                         #数据库名
           'USER': 'root',                       #用户名
           'PASSWORD': 'root',                   #密码
-          'HOST': 'localhost',                           #数据库主机，默认为localhost
-          'PORT': 3306,                           #数据库端口，MySQL默认为3306
+          'HOST': 'localhost',                  #数据库主机，默认为localhost
+          'PORT': 3306,                         #数据库端口，MySQL默认为3306
           'OPTIONS': {
-             'autocommit': True,
+             'autocommit': True,                #自动提交事务
          }
     }
 }
@@ -120,13 +120,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 #设置跨域
