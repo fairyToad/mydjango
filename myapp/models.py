@@ -21,8 +21,9 @@ class User(Base):
     img = models.CharField(max_length=200)
 
     # 类别,用于权限管理 (使用整形,有助于提升性能)
+    # 0普通用户 1超级管理员 2网站编辑 3新浪
     type = models.IntegerField(default=0, null=True)
-    phone = models.CharField(max_length=200)
+    phone = models.CharField(max_length=200,null=True)
     # 个人主页
     num = models.IntegerField(default=0, null=True)
 

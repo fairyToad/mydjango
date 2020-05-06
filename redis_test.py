@@ -18,7 +18,7 @@ code = code.decode('utf-8')
 
 print(code)
 
-c=r.llen('test')
-print(
-    c
-)
+# c=r.llen('test')
+# print(
+#     c
+# )
