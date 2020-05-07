@@ -3,10 +3,10 @@ import cv2
 
 
 # 灰色滤镜,提高AI识图准确率
-# #读图
-# img = cv2.imread('./code.png',cv2.IMREAD_GRAYSCALE)
-# # #写图
-# cv2.imwrite('./code1.png',img)
+#读图
+img = cv2.imread('./code.png',cv2.IMREAD_GRAYSCALE)
+# #写图
+cv2.imwrite('./code1.png',img)
 
 
 

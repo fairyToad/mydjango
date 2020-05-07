@@ -29,6 +29,7 @@ from mydjango.settings import UPLOAD_ROOT
 import os
 # 文件改名
 from datetime import datetime
+import datetime
 
 # 压缩文件
 import cv2
@@ -145,6 +146,49 @@ def wb_back(request):
 	#重定向
 	return redirect("http://localhost:8080?sina_id="+str(sina_id)+"&uid="+str(user_id))
 	# return HttpResponse("回调成功") 
+
+
+# 定义权限检测装饰器
+# 在cbv里需要导包,调用时不能直接@装饰器名称
+# fbv无需导包,也可直接调用,但得用httpresponse返回数据
+from django.utils.decorators import method_decorator
+def my_decorator(func):
+	def wrapper(request,*args,**kwargs):
+		uid = request.GET.get("uid",None)
+		myjwt = request.GET.get("jwt",None)
+		try:
+			decode_jwt=jwt.decode(myjwt,'qwe123',algorithms=['HS256'])
+		except Exception as e:
+    		# print('guoqi')
+			return Response({
+				'code':402,
+				'message':"token过期,请重新登陆"
+			})
+
+		if int(uid)!=int(decode_jwt['data']['uid']):
+			return Response({
+				'code':401,
+				'message':"无效权限"
+			})
+
+		return func(request,*args,**kwargs)
+	return wrapper
+
+#获取用户信息接口
+class UserInfo(APIView):
+
+	@method_decorator(my_decorator)
+	def get(self,request):
+		#接收参数
+		uid = request.GET.get("uid",None)
+		#查询数据库
+		user = User.objects.get(id=int(uid))
+		if user.img == "":
+			user.img = "snowgitlabk.jpg"
+		#返回
+		return Response({'code':200,'img':user.img,'phone':user.phone})
+
+
 
 
 # #文件上传通用类
@@ -273,9 +317,9 @@ class Login(APIView):
 		password=request.GET.get('password',None)
 		code = request.GET.get('code', None)
 
-		# 比对验证码
+		# 比对验证码,如果验证码不正确,直接返回,无需读库
 		redis_code = r.get("code")
-		# 转码 str(redis_code,'utf-8')
+		# 转码 
 		redis_code = str(redis_code,'utf-8')
 		# 从session取值
 		# session_code = request.session.get('code', None)
@@ -288,16 +332,29 @@ class Login(APIView):
             #查询参数
 			#.get只查一个,查不到会报错,在确保能查到数据的时候使用(用户登录之后),可以提高性能(根据索引查询)
 			#.filter查所有
-			# 此处查询条件是且的关系
-			user=User.objects.filter(username=username,password=make_password(password)).first()
+
+			# 此处用户名和密码条件是且的关系(库里的数据=从前端接收的参数)
+			# Q查询 验证手机号字段登录
+			user=User.objects.filter(Q(username=username) | Q(phone=username),password=make_password(password)).first()
 
 			if user:
+    			#生成token,转码并传给前端存储(时效为30秒测试,过期则重定向到登陆页面)
+				payload={
+					# 引入过期时间
+					'exp':int((datetime.datetime.now() + datetime.timedelta(seconds=30)).timestamp()),
+					'data':{'uid':user.id}
+				}
+				
+				encode_jwt=jwt.encode(payload,'qwe123',algorithm='HS256')
+				encode_str=str(encode_jwt,'utf-8')
+
 				return Response({
 					'code':200,
 					'message':'登陆成功',
 					# 可扩展性
 					'uid':user.id,
-					'username':user.username
+					'username':user.username,
+					'jwt':encode_str,
 				})
 			else:
 				r.lpush(username, 1)

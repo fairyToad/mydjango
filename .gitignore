@@ -3,3 +3,4 @@
 __pycache__
 migrations
 /static/upload/
+/.vscode/
