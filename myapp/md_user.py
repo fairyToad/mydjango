@@ -61,7 +61,7 @@ from myapp.models import User
 # 建立redis链接
 #定义ip和端口
 host = "localhost"
-port = 6379
+port = 6379 
 #建立链接
 r = redis.Redis(host=host,port=port)
 
@@ -78,20 +78,16 @@ class QiNiu(APIView):
 #又拍云存储
 import upyun
 class UpYun(APIView):
-
 	def post(self,request):
-
 		#获取文件
 		file = request.FILES.get('file')
 		#新建又拍云实例
 		up = upyun.UpYun('123123123123','test123456','ihw5JZsdxHD0PFVUqDsd2MFCQd4o8lIu')
 		#声明头部信息
 		headers = {'x-gmkerl-rotate':'auto'}
-
 		#上传图片
 		for chunk in file.chunks():
 			res = up.put('/touxiang_test1.jpg',chunk,checksum=True,headers=headers)
-
 		return Response({'filename':file.name})
 
 
@@ -99,10 +95,8 @@ class UpYun(APIView):
 def wb_back(request):
 	#接收参数
 	code = request.GET.get('code',None)
-
 	#定义token接口地址
 	url = "https://api.weibo.com/oauth2/access_token"
-
 	#定义参数
 	re = requests.post(url,data={
 		"client_id":"670240910", 
@@ -116,19 +110,13 @@ def wb_back(request):
 	})
 	# 打印返回值 (通过token换取昵称)
 	print(re.json()) 
-	
-
 	#换取新浪微博用户昵称
 	res = requests.get('https://api.weibo.com/2/users/show.json',params={'access_token':re.json()['access_token'],'uid':re.json()['uid']})
-
 	print(res.json())
-
 	sina_id = ''
 	user_id = ''
-
 	#判断是否用新浪微博登录过(避免二次入库 )
 	user = User.objects.filter(username=str(res.json()['name'])).first()
-
 	if user:
 		#代表曾经用该账号登录过
 		sina_id = user.username
@@ -140,9 +128,7 @@ def wb_back(request):
 		user = User.objects.filter(username=str(res.json()['name'])).first()
 		sina_id = user.username
 		user_id = user.id
-
 	print(sina_id,user_id)
-
 	#重定向
 	return redirect("http://localhost:8080?sina_id="+str(sina_id)+"&uid="+str(user_id))
 	# return HttpResponse("回调成功") 
@@ -327,7 +313,7 @@ class Login(APIView):
 		if code != redis_code:
 			return Response({'code': 403, 'message': '您输入的验证码有误'})
 
-        # 此锁定方法会报key类型错误......,去掉外层判断不报错,但是业务逻辑会有问题
+
 		if r.llen(username)<6:
             #查询参数
 			#.get只查一个,查不到会报错,在确保能查到数据的时候使用(用户登录之后),可以提高性能(根据索引查询)
@@ -336,22 +322,19 @@ class Login(APIView):
 			# 此处用户名和密码条件是且的关系(库里的数据=从前端接收的参数)
 			# Q查询 验证手机号字段登录
 			user=User.objects.filter(Q(username=username) | Q(phone=username),password=make_password(password)).first()
-
 			if user:
-    			#生成token,转码并传给前端存储(时效为30秒测试,过期则重定向到登陆页面)
+				#生成token,转码并传给前端存储(时效为30秒测试,过期则重定向到登陆页面)
 				payload={
 					# 引入过期时间
-					'exp':int((datetime.datetime.now() + datetime.timedelta(seconds=30)).timestamp()),
+					'exp':int((datetime.datetime.now() + datetime.timedelta(seconds=7200)).timestamp()),
 					'data':{'uid':user.id}
 				}
-				
 				encode_jwt=jwt.encode(payload,'qwe123',algorithm='HS256')
 				encode_str=str(encode_jwt,'utf-8')
 
 				return Response({
 					'code':200,
 					'message':'登陆成功',
-					# 可扩展性
 					'uid':user.id,
 					'username':user.username,
 					'jwt':encode_str,
@@ -359,14 +342,7 @@ class Login(APIView):
 			else:
 				r.lpush(username, 1)
 				if r.llen(username) > 5:
-					# 单位是秒
 					r.expire(username, 30)
-					return Response({
-						'code': 403,
-						'message': '账号已被锁定'
-					# 	到此只是告知锁定,待定
-					})
-
 				return Response({
 					'code':403,
 					'message':'用户名或密码错误',
@@ -423,3 +399,27 @@ class MyCode(View):
 		print(r.get('code'))
 
 		return HttpResponse(buf.getvalue(),'image/png')
+
+
+
+from django.utils.deprecation import MiddlewareMixin
+#自定义中间件
+class MyMiddleware(MiddlewareMixin):
+
+	def process_request(self,request):
+		print('过滤中间件')
+		#获取路由
+		# if request.path_info.startswith("/userinfo/"):
+		# 	return JsonResponse({'message':'您篡改了uid'},safe=False,json_dumps_params={'ensure_ascii':False,'indent':4})
+		#return HttpResponse(json.dumps({'message':'您篡改了uid'},ensure_ascii=False,indent=4),content_type='application/json')
+		pass
+
+	def process_view(self,request,view_func,view_args,view_kwargs):
+		pass
+
+	def process_exception(self,request,exception):
+		pass
+
+	def process_response(self,request,response):
+		return response
+

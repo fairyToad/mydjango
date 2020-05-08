@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #加载自定义中间件   文件夹名.文件名.类名
-    #'myapp.views.MyMiddleware'
+    'myapp.md_user.MyMiddleware'
 ]
 
 ROOT_URLCONF = 'mydjango.urls'
@@ -82,16 +82,16 @@ WSGI_APPLICATION = 'mydjango.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-   'default': {
-          'ENGINE': 'django.db.backends.mysql', #数据库引擎
-          'NAME': 'md',                         #数据库名
-          'USER': 'root',                       #用户名
-          'PASSWORD': 'root',                   #密码
-          'HOST': 'localhost',                  #数据库主机，默认为localhost
-          'PORT': 3306,                         #数据库端口，MySQL默认为3306
-          'OPTIONS': {
-             'autocommit': True,                #自动提交事务
-         }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', #数据库引擎
+        'NAME': 'md',                         #数据库名
+        'USER': 'root',                       #用户名
+        'PASSWORD': 'root',                   #密码
+        'HOST': 'localhost',                  #数据库主机，默认为localhost
+        'PORT': 3306,                         #数据库端口，MySQL默认为3306
+        'OPTIONS': {
+            'autocommit': True,                #自动提交事务
+        }
     }
 }
 
@@ -137,7 +137,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS=[
-     os.path.join(BASE_DIR,'static')
+    os.path.join(BASE_DIR,'static')
 ]
 
 #定义上传文件夹的路径
