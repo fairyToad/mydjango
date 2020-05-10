@@ -55,7 +55,7 @@ from django.db.models import Q,F
 from dwebsocket.decorators import accept_websocket
 import uuid
 
-from myapp.models import User
+from myapp.models import *
 
 
 # 建立redis链接
@@ -64,6 +64,19 @@ host = "localhost"
 port = 6379 
 #建立链接
 r = redis.Redis(host=host,port=port)
+
+
+from myapp.myser import CarouselSer
+
+
+#轮播图后台接口
+class GetCarousel(APIView):
+	def get(self,request):
+		#读库
+		carousels = Carousel.objects.all()
+		#序列化操作
+		carousels_ser = CarouselSer(carousels,many=True)
+		return Response(carousels_ser.data)
 
 #七牛云token
 from qiniu import Auth
@@ -402,24 +415,24 @@ class MyCode(View):
 
 
 
-from django.utils.deprecation import MiddlewareMixin
-#自定义中间件
-class MyMiddleware(MiddlewareMixin):
+# from django.utils.deprecation import MiddlewareMixin
+# #自定义中间件
+# class MyMiddleware(MiddlewareMixin):
 
-	def process_request(self,request):
-		print('过滤中间件')
-		#获取路由
-		# if request.path_info.startswith("/userinfo/"):
-		# 	return JsonResponse({'message':'您篡改了uid'},safe=False,json_dumps_params={'ensure_ascii':False,'indent':4})
-		#return HttpResponse(json.dumps({'message':'您篡改了uid'},ensure_ascii=False,indent=4),content_type='application/json')
-		pass
+# 	def process_request(self,request):
+# 		print('过滤中间件')
+# 		#获取路由
+# 		# if request.path_info.startswith("/userinfo/"):
+# 		# 	return JsonResponse({'message':'您篡改了uid'},safe=False,json_dumps_params={'ensure_ascii':False,'indent':4})
+# 		#return HttpResponse(json.dumps({'message':'您篡改了uid'},ensure_ascii=False,indent=4),content_type='application/json')
+# 		pass
 
-	def process_view(self,request,view_func,view_args,view_kwargs):
-		pass
+# 	def process_view(self,request,view_func,view_args,view_kwargs):
+# 		pass
 
-	def process_exception(self,request,exception):
-		pass
+# 	def process_exception(self,request,exception):
+# 		pass
 
-	def process_response(self,request,response):
-		return response
+# 	def process_response(self,request,response):
+# 		return response
 

@@ -12,6 +12,16 @@ class Base(models.Model):
         # 允许继承
         abstract = True
 
+#轮播图
+class Carousel(Base):
+	name = models.CharField(max_length=200)
+    # 点击跳转的链接
+	src = models.CharField(max_length=200)
+    # 图片
+	img = models.CharField(max_length=200) 
+	#声明表名
+	class Meta:
+		db_table = "carousel"
 
 # 用户表
 class User(Base):
@@ -22,8 +32,8 @@ class User(Base):
 
     # 类别,用于权限管理 (使用整形,有助于提升性能)
     # 0普通用户 1超级管理员 2网站编辑 3新浪
-    type = models.IntegerField(default=0, null=True)
-    phone = models.CharField(max_length=200,null=True)
+    type = models.IntegerField(default=0, null=True)    
+    phone = models.CharField(max_length=200)
     # 个人主页
     num = models.IntegerField(default=0, null=True)
 
