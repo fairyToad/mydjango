@@ -1,6 +1,8 @@
 # from django.test import TestCase
 
 # Create your tests here.
+
+# jwt测试脚本
 import jwt
 import datetime
 # 只能存在前端(cookie或webstorage)

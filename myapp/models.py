@@ -40,3 +40,25 @@ class User(Base):
     # 声明表名
     class Meta:
         db_table = 'user'
+
+# 商品表
+class Goods(Base):
+    name = models.CharField(max_length=200)
+    desc = models.CharField(max_length=200,null=True)
+    img = models.CharField(max_length=200,null=True) 
+    video = models.CharField(max_length=200,null=True) 
+    price=models.IntegerField()
+    params=models.CharField(max_length=400)
+    flows=models.IntegerField(default=0,null=True)
+    cid=models.IntegerField(null=True)
+	#声明表名
+    class Meta:
+        db_table = "goods"
+
+
+# 商品表
+class Category(Base):
+    name = models.CharField(max_length=200)
+	#声明表名
+    class Meta:
+        db_table = "category"
